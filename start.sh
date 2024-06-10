@@ -6,7 +6,9 @@ chmod +x /tmp/frpc_linux_amd64_v0.2
 mkdir -p /app/gradio
 
 # 파일 이동
-mv /tmp/frpc_linux_amd64_v0.2 /app/gradio/
+mv /tmp/frpc_linux_amd64_v0.2 /usr/local/lib/python3.9/site-packages/gradio
 
 # 애플리케이션 실행
 python app.py
+
+
