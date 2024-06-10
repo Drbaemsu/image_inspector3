@@ -11,11 +11,9 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Gradio 디렉토리에 대한 권한 변경 및 frpc_linux_amd64_v0.2 다운로드 및 설정
-RUN mkdir -p /usr/local/lib/python3.9/site-packages/gradio && \
-    chmod -R 777 /usr/local/lib/python3.9/site-packages/gradio && \
-    curl -L -o /usr/local/lib/python3.9/site-packages/gradio/frpc_linux_amd64_v0.2 https://cdn-media.huggingface.co/frpc-gradio-0.2/frpc_linux_amd64 && \
-    chmod +x /usr/local/lib/python3.9/site-packages/gradio/frpc_linux_amd64_v0.2
+# 로컬에서 다운로드한 frpc_linux_amd64_v0.2 파일 복사 및 설정
+COPY frpc_linux_amd64_v0.2 /usr/local/lib/python3.9/site-packages/gradio/frpc_linux_amd64_v0.2
+RUN chmod +x /usr/local/lib/python3.9/site-packages/gradio/frpc_linux_amd64_v0.2
 
 # 애플리케이션 파일 복사
 COPY . /app
