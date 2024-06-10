@@ -6,6 +6,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 import urllib.parse
 import cv2
+import cv2.cv2 # IMPORTANT //adding this
 import numpy as np
 import gradio as gr
 import asyncio
