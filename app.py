@@ -139,4 +139,4 @@ iface_with_save = gr.Interface(
     description="Upload an image and a file containing URLs (one per line) to find similar images from the downloaded sets.",
 )
 
-iface_with_save.launch(debug=True)
+iface_with_save.launch(debug=True, share=True)
