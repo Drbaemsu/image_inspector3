@@ -1,5 +1,5 @@
 import os
-os.environ["GRADIO_FRPC_PATH"] = "/usr/local/lib/python3.9/site-packages/gradio/frpc_linux_amd64_v0.2"
+os.environ["GRADIO_FRPC_PATH"] = "/app/frpc_linux_amd64_v0.2"
 
 
 from playwright.async_api import async_playwright
