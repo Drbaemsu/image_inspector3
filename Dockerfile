@@ -18,8 +18,6 @@ RUN chmod +x /app/frpc_linux_amd64_v0.2
 # 애플리케이션 파일 복사
 COPY . /app
 
-# 실행 권한 설정
-RUN chmod +x /app/start.sh
-
-# 애플리케이션 시작
-CMD ["sh", "start.sh"]
+# 환경 변수 설정 및 애플리케이션 시작
+ENV GRADIO_FRPC_PATH=/app/frpc_linux_amd64_v0.2
+CMD ["python", "app.py"]
