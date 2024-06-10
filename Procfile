@@ -1,1 +1,1 @@
-web: python app.py
+web: gradio app:iface_with_save
