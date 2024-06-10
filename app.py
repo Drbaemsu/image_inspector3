@@ -1,4 +1,7 @@
 import os
+os.environ["GRADIO_FRPC_PATH"] = "/usr/local/lib/python3.9/site-packages/gradio/frpc_linux_amd64_v0.2"
+
+
 from playwright.async_api import async_playwright
 from PIL import Image
 from io import BytesIO
@@ -11,6 +14,7 @@ import gradio as gr
 import asyncio
 import re
 import pandas as pd
+
 
 # os.environ["GRADIO_FRPC_PATH"] = "/app/frpc_linux_amd64_v0.2"
 
