@@ -5,6 +5,3 @@ export GRADIO_FRPC_PATH=/usr/local/lib/python3.9/site-packages/gradio/frpc_linux
 
 # Gradio 애플리케이션 실행
 python app.py
-
-
-
