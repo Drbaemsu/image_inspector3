@@ -1,7 +1,4 @@
 import os
-os.environ["GRADIO_FRPC_PATH"] = "/app/frpc_linux_amd64_v0.2"
-
-
 from playwright.async_api import async_playwright
 from PIL import Image
 from io import BytesIO
