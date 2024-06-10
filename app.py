@@ -12,6 +12,8 @@ import asyncio
 import re
 import pandas as pd
 
+os.environ["GRADIO_FRPC_PATH"] = "/app/frpc_linux_amd64_v0.2"
+
 # 이미지 저장 경로 설정
 images_folder = 'naver_map_images'
 os.makedirs(images_folder, exist_ok=True)
