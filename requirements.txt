@@ -7,3 +7,5 @@ playwright
 Pillow
 beautifulsoup4
 opencv-python-headless
+numpy
+pandas
