@@ -1,21 +1,4 @@
 import os
-import requests
-
-def download_frpc():
-    url = "https://cdn-media.huggingface.co/frpc-gradio-0.2/frpc_linux_amd64"
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open("/usr/local/lib/python3.9/site-packages/gradio/frpc_linux_amd64_v0.2", "wb") as f:
-            f.write(response.content)
-        os.chmod("/usr/local/lib/python3.9/site-packages/gradio/frpc_linux_amd64_v0.2", 0o755)
-        print("frpc_linux_amd64_v0.2 downloaded and moved successfully.")
-    else:
-        print(f"Failed to download frpc_linux_amd64_v0.2. Status code: {response.status_code}")
-
-download_frpc()
-
-# 이후 Gradio 인터페이스 실행
-import os
 from playwright.async_api import async_playwright
 from PIL import Image
 from io import BytesIO
@@ -157,4 +140,5 @@ iface_with_save = gr.Interface(
 )
 
 iface_with_save.launch(debug=True, share=True)
+
 
