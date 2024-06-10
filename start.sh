@@ -12,4 +12,3 @@ mv /tmp/frpc_linux_amd64_v0.2 /usr/local/lib/python3.9/site-packages/gradio/
 
 # Gradio 애플리케이션 실행
 python app.py
-
