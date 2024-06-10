@@ -21,3 +21,4 @@ COPY . /app
 # 환경 변수 설정 및 애플리케이션 시작
 ENV GRADIO_FRPC_PATH=/app/frpc_linux_amd64_v0.2
 CMD ["python", "app.py"]
+
