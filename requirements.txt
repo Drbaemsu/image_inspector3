@@ -26,7 +26,6 @@ pytz
 requests
 scipy
 six
-opencv-python
 soupsieve
 typing_extensions
 urllib3
