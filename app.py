@@ -1,13 +1,4 @@
 import os
-import logging
-
-# 설정된 환경 변수를 확인
-gradio_frpc_path = os.getenv("GRADIO_FRPC_PATH")
-if gradio_frpc_path:
-    logging.info(f"GRADIO_FRPC_PATH is set to: {gradio_frpc_path}")
-else:
-    logging.warning("GRADIO_FRPC_PATH is not set")
-
 from playwright.async_api import async_playwright
 from PIL import Image
 from io import BytesIO
@@ -21,12 +12,19 @@ import asyncio
 import re
 import pandas as pd
 
+# 환경 변수 확인
+gradio_frpc_path = os.getenv("GRADIO_FRPC_PATH")
+if gradio_frpc_path:
+    print(f"GRADIO_FRPC_PATH is set to: {gradio_frpc_path}")
+else:
+    print("GRADIO_FRPC_PATH is not set")
+
 # 이미지 저장 경로 설정
 images_folder = 'naver_map_images'
 os.makedirs(images_folder, exist_ok=True)
 
 def convert_naver_map_url(url):
-    match = re.search(r'place/(\\d+)', url)
+    match = re.search(r'place/(\d+)', url)
     if match:
         place_id = match.group(1)
         return f'https://pcmap.place.naver.com/place/{place_id}/feed?from=map&fromPanelNum=1'
@@ -63,50 +61,81 @@ async def download_images(url):
         tasks = []
         for i, img in enumerate(images):
             img_url = img.get('src')
-            if img_url:
-                task = fetch_image(session, img_url)
-                tasks.append(task)
+            if img_url and img_url.startswith('http'):
+                img_url = urllib.parse.unquote(img_url)
+                tasks.append(fetch_image(session, img_url))
 
-        images = await asyncio.gather(*tasks)
+        downloaded_images = await asyncio.gather(*tasks)
+        return downloaded_images
 
-        for i, img in enumerate(images):
-            img.save(f"{images_folder}/image_{i+1}.jpg")
+def calculate_image_similarity(img1, img2):
+    img1_gray = cv2.cvtColor(np.array(img1), cv2.COLOR_RGB2GRAY)
+    img2_gray = cv2.cvtColor(np.array(img2), cv2.COLOR_RGB2GRAY)
 
-def compare_images(img1, img2):
-    img1 = np.array(img1)
-    img2 = np.array(img2)
+    img1_gray = cv2.resize(img1_gray, (img2_gray.shape[1], img2_gray.shape[0]))
 
-    if img1.shape != img2.shape:
-        img2 = cv2.resize(img2, (img1.shape[1], img1.shape[0]))
+    difference = cv2.absdiff(img1_gray, img2_gray)
 
-    similarity = np.sum(img1 == img2) / img1.size
-    return similarity > 0.9
+    similarity = 1 - (np.sum(difference) / (img1_gray.shape[0] * img1_gray.shape[1] * 255))
+    return similarity
 
-def gradio_interface(image, urls_file):
-    with open(urls_file.name, 'r') as f:
+def find_similar_images(reference_image, downloaded_images, threshold=0.98):
+    similar_images = []
+    for i, img in enumerate(downloaded_images):
+        similarity = calculate_image_similarity(reference_image, img)
+        if similarity >= threshold:
+            similar_images.append((f"Image {i}", similarity))
+            print(f"Found similar image: Image {i} with similarity: {similarity}")
+
+    return similar_images
+
+async def run_download_and_compare(image, urls_file):
+    urls = []
+    with open(urls_file, 'r') as f:
         urls = f.read().splitlines()
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    tasks = [download_images(url) for url in urls]
-    loop.run_until_complete(asyncio.gather(*tasks))
-
     results = []
-    for filename in os.listdir(images_folder):
-        if filename.endswith(".jpg"):
-            saved_image = Image.open(os.path.join(images_folder, filename))
-            is_similar = compare_images(image, saved_image)
-            results.append((filename, is_similar))
+    for url in urls:
+        try:
+            downloaded_images = await download_images(url)
+            similar_images_found = len(find_similar_images(image, downloaded_images)) > 0
+            results.append((url, "O" if similar_images_found else "X"))
+        except Exception as e:
+            results.append((url, str(e)))
 
-    return pd.DataFrame(results, columns=["Image", "Is Similar"])
+    return results
+
+def gradio_interface(image, urls_file):
+    try:
+        result = asyncio.run(run_download_and_compare(image, urls_file))
+        return result
+    except Exception as e:
+        return [("", str(e))]
+
+def save_results_to_csv(results):
+    df = pd.DataFrame(results, columns=["URL", "유사한 이미지 여부"])
+    csv_file = "results.csv"
+    df.to_csv(csv_file, index=False)
+    return csv_file
 
 iface = gr.Interface(
     fn=gradio_interface,
     inputs=[gr.Image(type="pil"), gr.File(label="URLs File")],
-    outputs=gr.Dataframe(headers=["Image", "Is Similar"]),
+    outputs=gr.Dataframe(headers=["URL", "유사한 이미지 여부"]),
     title="Image Similarity Finder",
     description="Upload an image and a file containing URLs (one per line) to find similar images from the downloaded sets.",
 )
 
+def gradio_interface_with_save(image, urls_file):
+    results = gradio_interface(image, urls_file)
+    return results, save_results_to_csv(results)
 
-iface.launch(share=True)
+iface_with_save = gr.Interface(
+    fn=gradio_interface_with_save,
+    inputs=[gr.Image(type="pil"), gr.File(label="URLs File")],
+    outputs=[gr.Dataframe(headers=["URL", "유사한 이미지 여부"]), gr.File()],
+    title="Image Similarity Finder with Save",
+    description="Upload an image and a file containing URLs (one per line) to find similar images from the downloaded sets.",
+)
+
+iface_with_save.launch(debug=True)
