@@ -21,7 +21,6 @@ else:
 
 # 이미지 저장 경로 설정
 images_folder = 'naver_map_images'
-os.makedirs(images_folder, exist_ok=True)
 
 def convert_naver_map_url(url):
     match = re.search(r'place/(\d+)', url)
