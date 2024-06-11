@@ -2,7 +2,14 @@ FROM python:3.9.6
 
 # 필수 패키지 설치
 COPY apt.yml /app/apt.yml
-RUN apt-get update && apt-get install -y $(grep -E '^\s*-\s*' /app/apt.yml | cut -d'-' -f2 | xargs)
+RUN apt-get update && apt-get install -y \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libgl1-mesa-glx \
+    libatlas-base-dev \
+    gfortran \
+    python3-opencv
 
 # 작업 디렉토리 설정
 WORKDIR /app
