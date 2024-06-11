@@ -3,7 +3,7 @@ build:
   packages:
     - libsm6
     - libxext6
-    - libxrender-dev
+    - libxrender1
     - libgl1-mesa-glx
     - libatlas-base-dev
     - gfortran
