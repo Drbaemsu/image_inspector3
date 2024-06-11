@@ -2,7 +2,7 @@ FROM python:3.9.6
 
 # 필수 패키지 설치
 COPY apt.yml /app/apt.yml
-RUN apt-get update && apt-get install -y $(cat /app/apt.yml | grep -E '^\s*-\s*' | cut -d'-' -f2)
+RUN apt-get update && apt-get install -y $(grep -E '^\s*-\s*' /app/apt.yml | cut -d'-' -f2 | xargs)
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -25,5 +25,3 @@ RUN chmod +x /app/entrypoint.sh
 # 애플리케이션 시작
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["python", "app.py"]
-
-
