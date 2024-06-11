@@ -123,6 +123,7 @@ iface = gr.Interface(
     outputs=gr.Dataframe(headers=["URL", "유사한 이미지 여부"]),
     title="Image Similarity Finder",
     description="Upload an image and a file containing URLs (one per line) to find similar images from the downloaded sets.",
+    flagging_dir="/app/flagged"
 )
 
 def gradio_interface_with_save(image, urls_file):
@@ -135,6 +136,7 @@ iface_with_save = gr.Interface(
     outputs=[gr.Dataframe(headers=["URL", "유사한 이미지 여부"]), gr.File()],
     title="Image Similarity Finder with Save",
     description="Upload an image and a file containing URLs (one per line) to find similar images from the downloaded sets.",
+    flagging_dir="/app/flagged"
 )
 
 iface_with_save.launch(debug=True)
